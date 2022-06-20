@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: #212121;
+            color: white;
+        }
+        #top
+        {
+            display:grid;
+            grid-template-columns: 20% 80%;
+            grid-template-rows: auto;
+            border:2px solid white;
+            justify-content: space-around;
+            width:90%;
+            margin:auto;
+            padding:10px;
+        }
+        #top>div{
+            padding-left: 40px;
+        }
+    #search_results
+    {
+        display:grid;
+        grid-template-columns: repeat(4,25%);
+        gap: 20px;
+        width:90%;
+        border:2px solid white;
+        margin:auto;
+        margin-top: 5px;
+        padding:10px;
+    }
+    #search_results>div{
+        padding:20px;
+        /* border:1px solid red; */
+    }
+    input[type=text], select {
+        width: 80%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+  button {
+  width: 10%;
+  background-color: black;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#search_results>img{
+    height:200px;
+    width:250px;
+
+}
+iframe{
+    border:none;
+}
+    </style>
+</head>
+<body>
+    <div id="top">
+        <div><img src="yt logo.png"/></div>
+        <div><input type="text" id="search"/>
+        <button onclick="searchVideos()">Search</button></div>
+    </div>
+    
+    <div id="search_results">
+        <h3 style="font-weight: 100; font-family: Arial, Helvetica, sans-serif;">Search Your favorite videos</h3>
+    </div>
+</body>
+</html>
+<script>
+
+
+
+    //https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=football&key=[YOUR_API_KEY] 
+    //AIzaSyDaRgKmMNcNgB2YW8G_ibD3Ym4hM4OwJ5A
+    // <iframe width="560" height="315" src="https://www.youtube.com/embed/miY7POa2qvA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    const search_results_div=document.getElementById("search_results");
+
+    const searchVideos = async ()=>
+    {
+        try
+        {
+          let input =document.getElementById("search").value;
+
+          let res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=${input}&key=AIzaSyDaRgKmMNcNgB2YW8G_ibD3Ym4hM4OwJ5A&maxResults=20`);
+          let data = await res.json();
+          let videos =data.items;
+          console.log(videos);
+          appendVideos(videos);
+         
+        }
+        catch(err)
+        {
+          console.log(err);
+        }
+    }
+
+
+    
+    const appendVideos = (data)=>{
+        search_results_div.innerHTML=null;
+       try
+       {
+        data.forEach(({snippet:{title}, id: {videoId}, snippet:{thumbnails} }) =>{
+
+        let div=document.createElement("div");
+        div.setAttribute("class","vid")
+
+        let name=document.createElement("p");
+        name.innerText=title;
+
+        let thumbnail = document.createElement("img");
+        thumbnail.src=thumbnails.default.url;
+
+
+        let iframe = document.createElement("iframe");
+        iframe.src=`https://www.youtube.com/embed/${videoId}`;
+        iframe.height ="230px";
+        iframe.width ="290px";
+        iframe.allow = "fullscreen";
+
+        div.append(iframe,name);
+        search_results_div.append(div);
+
+         });
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    };
+
+        
+
+
+
+</script>
